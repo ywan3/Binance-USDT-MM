@@ -1,0 +1,18 @@
+backoff @ file:///home/conda/feedstock_root/build_artifacts/backoff_1665004764738/work
+Brotli @ file:///Users/runner/miniforge3/conda-bld/brotli-split_1695989838345/work
+certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1707022139797/work/certifi
+cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1696001688429/work
+charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1698833585322/work
+coinbase-advanced-py @ file:///home/conda/feedstock_root/build_artifacts/coinbase-advanced-py_1707997018493/work
+cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography-split_1708852568701/work
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1701026962277/work
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1707225541074/work/dist/numpy-1.26.4-cp312-cp312-macosx_10_9_x86_64.whl#sha256=c0e7d196d262a4694628c8965da758026291887ae6e907976eece62f7669407b
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
+PyJWT @ file:///home/conda/feedstock_root/build_artifacts/pyjwt_1706895065046/work
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
+setuptools==69.1.1
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1708239446578/work
+websocket-client @ file:///home/conda/feedstock_root/build_artifacts/websocket-client_1701630677416/work
+websockets @ file:///Users/runner/miniforge3/conda-bld/websockets_1697914710084/work
+wheel==0.42.0
