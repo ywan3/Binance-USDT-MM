@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
         logger = Logger()
         logger.register_log_type("execution", "./stream_bn/logs/execution_log.txt")
-        logger.register_log_type("orderbook_stream", "./stream_bn/logs/program_log.txt")
+        #logger.register_log_type("orderbook_stream", "./stream_bn/logs/program_log.txt")
         logger.register_log_type("trade_stream", "./stream_bn/logs/trade_stream_log.txt")
 
 

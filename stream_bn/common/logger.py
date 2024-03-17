@@ -12,5 +12,7 @@ class Logger:
             print(e)
 
     def log_message(self, log_message_type, message_payload):
+        if log_message_type is None:
+            return
         self.log_path_list[log_message_type].write(message_payload)
         self.log_path_list[log_message_type].flush()
