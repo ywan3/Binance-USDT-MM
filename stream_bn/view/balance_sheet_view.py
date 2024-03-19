@@ -19,9 +19,9 @@ import random
 from stream_bn.common.utils import *
 
 
-
-### asset_1 : btc
-### asset_2 : usdc
+### when we say buy we mean swap the more base asset with the more volatile asset
+### asset_1 : more volatile asset 
+### asset_2 : more base asset
 class BalanceSheetView:
     def __init__(self, asset_1_name, asset_1_quantity, asset_2_name, asset_2_quantity, exchange_ratio=None):
         self.asset_1_name = asset_1_name
@@ -29,6 +29,8 @@ class BalanceSheetView:
         self.asset_1_quantity = asset_1_quantity
         self.asset_2_quantity = asset_2_quantity
         self.exchange_ratio = exchange_ratio
+        self.abort_buy_usdt_threshold = 0.1
+        self.abort_sell_usdt_threshold = 0.9
         self.lock = threading.Lock()
 
     def get_exchange_ratio(self):
@@ -82,5 +84,5 @@ class BalanceSheetView:
             asset_1_proportion = self.asset_1_quantity * self.exchange_ratio / total_book_value
             asset_2_proportion = self.asset_2_quantity / total_book_value
         
-        return [asset_1_proportion, asset_2_proportion]
+        return [asset_1_proportion, asset_2_proportion] # usdt, usd
     

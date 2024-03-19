@@ -531,8 +531,8 @@ f"""{json_object}
             #     self.blitzkrieg_lock.release()
             #     return
             with self.buy_state_lock:
-
-                if self.balance_sheet_view.get_asset_proportion()[1] < ABORT_SIDE_THRESHOLD or not self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] > (1 - mid_price) * 10 + 0.15 or not self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     print("buy aborted")
                     return
                 
@@ -558,7 +558,8 @@ f"""{json_object}
             #     self.blitzkrieg_lock.release()
             #     return
             with self.sell_state_lock:
-                if self.balance_sheet_view.get_asset_proportion()[0] < ABORT_SIDE_THRESHOLD or not self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] < (1 - mid_price) * 10 - 0.05 or not self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     print("sell aborted")
                     return
                 trade_sample_raw = self.construct_trade(BinancePayloadSample.sell_sample, False, False)
@@ -591,7 +592,9 @@ f"""{json_object}
                 self.outstanding_order_view.old_buy.cancel_sent()
                 cancel_id = self.outstanding_order_view.new_buy.get_order_id()
                 self.outstanding_order_view.new_buy.delete_thread_safe()
-                if self.balance_sheet_view.get_asset_proportion()[1] >= ABORT_SIDE_THRESHOLD and self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] <= (1 - mid_price) * 10 + 0.15 and self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     # Cancel and replace
                     trade_sample_raw = self.construct_trade(
                         BinancePayloadSample.cancel_replace_buy_sample_unfilled, 
@@ -628,11 +631,15 @@ f"""{json_object}
             #     self.blitzkrieg_lock.release()
             #     return
             with self.sell_state_lock:
+
+
                 self.outstanding_order_view.old_sell = Order.create_from(self.outstanding_order_view.new_sell.get_order())
                 self.outstanding_order_view.old_sell.cancel_sent()
                 cancel_id = self.outstanding_order_view.new_sell.get_order_id()
                 self.outstanding_order_view.new_sell.delete_thread_safe()
-                if self.balance_sheet_view.get_asset_proportion()[0] >= ABORT_SIDE_THRESHOLD and self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] >= (1 - mid_price) * 10 - 0.05 and self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     # Cancel and replace
                     trade_sample_raw = self.construct_trade(
                         BinancePayloadSample.cancel_replace_sell_sample_unfilled, 
@@ -674,7 +681,9 @@ f"""{json_object}
                 self.outstanding_order_view.old_buy.cancel_sent()
                 cancel_id = self.outstanding_order_view.new_buy.get_order_id()
                 self.outstanding_order_view.new_buy.delete_thread_safe()
-                if self.balance_sheet_view.get_asset_proportion()[1] >= ABORT_SIDE_THRESHOLD and self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] > (1 - mid_price) * 10 + 0.15 and self.orderbook_view.get_can_buy() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     # Cancel and replace
                     trade_sample_raw = self.construct_trade(
                         BinancePayloadSample.cancel_replace_buy_sample_partial_filled, 
@@ -710,12 +719,14 @@ f"""{json_object}
             #     self.blitzkrieg_lock.release()
             #     return
             with self.sell_state_lock:
-                
+
                 self.outstanding_order_view.old_sell = Order.create_from(self.outstanding_order_view.new_sell.get_order())
                 self.outstanding_order_view.old_sell.cancel_sent()
                 cancel_id = self.outstanding_order_view.new_sell.get_order_id()
                 self.outstanding_order_view.new_sell.delete_thread_safe()
-                if self.balance_sheet_view.get_asset_proportion()[0] >= ABORT_SIDE_THRESHOLD and self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
+
+                mid_price = (self.orderbook_view.get_best_bid()[0] + self.orderbook_view.get_best_ask()[0]) / 2.0
+                if self.balance_sheet_view.get_asset_proportion()[0] >= (1 - mid_price) * 10 - 0.05 and self.orderbook_view.get_can_sell() and self.orderbook_view.get_best_ask()[0] - self.orderbook_view.get_best_bid()[0] > MIN_SPREAD_FOR_MARKET_MAKING * PRICE_TICK:
                     # Cancel and replace
                     trade_sample_raw = self.construct_trade(
                         BinancePayloadSample.cancel_replace_sell_sample_partial_filled, 
