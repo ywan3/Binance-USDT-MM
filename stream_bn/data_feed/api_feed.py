@@ -69,7 +69,6 @@ class ApiFeed:
     def on_balance_sheet_setup_callback(self, ws, message):
 
         try:
-            print(message)
             balances = json.loads(message)['result']['balances']
 
             usdt_balance = float([balance["free"] for balance in balances if balance["asset"] == self.asset_1_name][0])
