@@ -43,6 +43,7 @@ class StreamFeed:
     @staticmethod
     def on_message(ws, message):
         json_object = json.loads(message)
+        print(f"on_message {json_object}")
         if 'stream' in json_object:
             StreamFeed.message_handler_dict.get(json_object['stream'], lambda data: print(f"Failed to locate handler for stream {json_object['stream']}"))(json_object['data'])
         elif 'result' in json_object and json_object['result'] is None:

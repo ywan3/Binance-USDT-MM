@@ -12,9 +12,13 @@ import sys
 MIN_SPREAD_FOR_MARKET_MAKING = 20
 PRICE_ACCURACY = 4 # 4 places after decimal
 PRICE_TICK = 1 / 10 ** PRICE_ACCURACY
+TIMESTAMP_SYNC_ITERATION = 3
 
 #@Monitor.wrap_all_methods(Monitor.log_trace)
 class ApiFeed:
+
+    timestamp_diff =  sum([float(requests.get('https://api.binance.us/api/v3/time').json()['serverTime']) - float(datetime.now().timestamp() * 1000 - 14400000) for _ in range(TIMESTAMP_SYNC_ITERATION)]) / float(TIMESTAMP_SYNC_ITERATION)
+
     def __init__(self, url, api_key, api_secret, asset_1_name, asset_2_name):
         self.message_handler_dict = {
             "cancel_replace" : None,
@@ -50,12 +54,12 @@ class ApiFeed:
         # Retrieve balance
         try:
             account_status_payload = {
-                "id": str(int(datetime.utcnow().timestamp() * 1000 - 14400000)),
+                "id": str(int(datetime.now().timestamp() * 1000 - 14400000 + ApiFeed.timestamp_diff)),
                 "method": "account.status",
                 "params": {
                     "apiKey": self.api_key,
                     "signature": "",
-                    "timestamp": str(int(datetime.utcnow().timestamp() * 1000 - 14400000))
+                    "timestamp": str(int(datetime.now().timestamp() * 1000 - 14400000 + ApiFeed.timestamp_diff))
                 }
             }
             self.sign_and_send(account_status_payload)
@@ -63,20 +67,23 @@ class ApiFeed:
             print(e)
 
     def on_balance_sheet_setup_callback(self, ws, message):
+
         try:
+            print(message)
             balances = json.loads(message)['result']['balances']
+
             usdt_balance = float([balance["free"] for balance in balances if balance["asset"] == self.asset_1_name][0])
             usd_balance = float([balance["free"] for balance in balances if balance["asset"] == self.asset_2_name][0])
             self.message_handler_dict["balance_sheet_setup"](usdt_balance, usd_balance)
             
             order_cancellation_payload = {
-                    "id": str(int(datetime.utcnow().timestamp() * 1000 - 14400000)),
+                    "id": str(int(datetime.now().timestamp() * 1000 - 14400000 + ApiFeed.timestamp_diff)),
                     "method": "openOrders.cancelAll",
                     "params": {
                         "symbol": self.asset_1_name + self.asset_2_name,
                         "apiKey": self.api_key,
                         "signature": "",
-                        "timestamp": str(int(datetime.utcnow().timestamp() * 1000 - 14400000))
+                        "timestamp": str(int(datetime.now().timestamp() * 1000 - 14400000 + ApiFeed.timestamp_diff))
                     }
                 }
             self.sign_and_send(order_cancellation_payload)
@@ -90,7 +97,7 @@ class ApiFeed:
         try:
             # request whole order book
             orderbook_request_payload = {
-                "id": str(int(datetime.utcnow().timestamp() * 1000 - 14400000)),
+                "id": str(int(datetime.now().timestamp() * 1000 - 14400000 + ApiFeed.timestamp_diff)),
                 "method": "depth",
                 "params": {
                     "symbol": "USDTUSD",
